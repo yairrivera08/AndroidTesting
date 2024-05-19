@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,17 +26,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
 import coil.compose.SubcomposeAsyncImage
-import com.eycr.network.ApiOperation
 import com.eycr.network.KtorClient
 import com.eycr.network.models.domain.CharacterStatus
 import com.eycr.network.models.domain.ShowCharacter
 import com.eycr.tvguidance.components.character.CharacterNameplateComponent
+import com.eycr.tvguidance.components.commons.CharacterImage
 import com.eycr.tvguidance.components.commons.DataPoint
 import com.eycr.tvguidance.components.commons.DataPointComponent
-import kotlinx.coroutines.delay
-import org.jetbrains.annotations.Async
+import com.eycr.tvguidance.components.commons.LoadingState
 
 @Composable
 fun CharacterDetailsScreen(
@@ -86,15 +83,7 @@ fun CharacterDetailsScreen(
             )
         }
         item {
-            SubcomposeAsyncImage(
-                model = character?.imageUrl ?: "https://www.cleanpng.com/png-portal-morty-smith-rick-sanchez-t-shirt-hoodie-por-890497/",
-                contentDescription = character?.name,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1f)
-                    .clip(RoundedCornerShape(12.dp)),
-                loading = { LoadingState() }
-            )
+            CharacterImage(imageUrl = character!!.imageUrl)
         }
         item { Spacer(modifier = Modifier.height(8.dp))}
         items(characterDataPoints) {
@@ -117,7 +106,7 @@ fun CharacterDetailsScreen(
                     )
                     .clip(RoundedCornerShape(12.dp))
                     .clickable {
-                            onEpisodeClicked(characterId)
+                        onEpisodeClicked(characterId)
                     }
                     .padding(vertical = 8.dp)
                     .fillMaxWidth()
@@ -126,13 +115,4 @@ fun CharacterDetailsScreen(
 
         item { Spacer(modifier = Modifier.height(64.dp)) }
     }
-}
-@Composable
-private fun LoadingState() {
-    CircularProgressIndicator(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(all = 128.dp),
-        color = Color.Cyan
-    )
 }

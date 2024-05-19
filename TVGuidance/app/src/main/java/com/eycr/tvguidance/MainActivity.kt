@@ -20,6 +20,7 @@ import com.eycr.network.KtorClient
 import com.eycr.tvguidance.ui.theme.PurpleGrey40
 import com.eycr.tvguidance.ui.theme.TVGuidanceTheme
 import com.eycr.tvguidance.views.CharacterDetailsScreen
+import com.eycr.tvguidance.views.CharacterEpisodeView
 
 class MainActivity : ComponentActivity() {
 
@@ -50,7 +51,10 @@ class MainActivity : ComponentActivity() {
                             )
                         ) { backStackEntry ->
                             val characterId: Int = backStackEntry.arguments?.getInt("characterId") ?: -1
-                            CharacterEpisodeScreen(characterId = characterId)
+                            CharacterEpisodeView(
+                                characterId = characterId,
+                                ktorClient = ktorClient
+                            )
                         }
                     }
 
