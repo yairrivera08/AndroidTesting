@@ -21,10 +21,14 @@ import com.eycr.tvguidance.ui.theme.PurpleGrey40
 import com.eycr.tvguidance.ui.theme.TVGuidanceTheme
 import com.eycr.tvguidance.views.CharacterDetailsScreen
 import com.eycr.tvguidance.views.CharacterEpisodeView
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private val ktorClient = KtorClient()
+    @Inject
+    lateinit var ktorClient: KtorClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
