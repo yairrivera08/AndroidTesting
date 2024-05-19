@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -30,6 +32,8 @@ import com.eycr.network.models.domain.Episode
 import com.eycr.network.models.domain.ShowCharacter
 import com.eycr.tvguidance.components.commons.CharacterImage
 import com.eycr.tvguidance.components.commons.CharacterName
+import com.eycr.tvguidance.components.commons.DataPoint
+import com.eycr.tvguidance.components.commons.DataPointComponent
 import com.eycr.tvguidance.components.commons.LoadingState
 import com.eycr.tvguidance.components.episode.EpisodeRowComponent
 import kotlinx.coroutines.launch
@@ -66,9 +70,24 @@ fun CharacterEpisodeView(characterId: Int, ktorClient: KtorClient) {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MainScreen(showCharacter: ShowCharacter, episodes: List<Episode>) {
+
+    val episodesBySeasonMap = episodes.groupBy { it.seasonNumber }
+
     LazyColumn (contentPadding = PaddingValues(all = 16.dp)) {
         item { CharacterName(name = showCharacter.name) }
         item { Spacer(modifier = Modifier.height(16.dp)) }
+        item {
+            LazyRow {
+                episodesBySeasonMap.forEach {mapEntry ->
+                    item { DataPointComponent(
+                        dataPoint = DataPoint(
+                            title = "Season ${mapEntry.key}",
+                            description = "${mapEntry.value.size} ep"))
+                        Spacer(modifier = Modifier.width(32.dp))
+                    }
+                }
+            }
+        }
         item { CharacterImage(imageUrl = showCharacter.imageUrl) }
         item { Spacer(modifier = Modifier.height(32.dp)) }
 

@@ -44,13 +44,29 @@ class KtorClient {
         }
     }
 
-    suspend fun getEpisodes(episodeIds: List<Int>): ApiOperation<List<Episode>> {
-        val idsCommaSeparated = episodeIds.joinToString(",")
+    suspend fun getEpisode(episodeId: Int): ApiOperation<Episode> {
         return safeApiCall {
-            client.get("episode/$idsCommaSeparated")
-                .body<List<RemoteEpisode>>()
-                .map { it.toDomainEpisode() }
+            client.get("episode/$episodeId")
+                .body<RemoteEpisode>()
+                .toDomainEpisode()
         }
+    }
+
+    suspend fun getEpisodes(episodeIds: List<Int>): ApiOperation<List<Episode>> {
+        // Fix deserialization when episode is Single element
+        return if(episodeIds.size == 1) {
+            getEpisode(episodeIds[0]).mapSuccess {
+                listOf(it)
+            }
+        } else {
+            val idsCommaSeparated = episodeIds.joinToString(",")
+            return safeApiCall {
+                client.get("episode/$idsCommaSeparated")
+                    .body<List<RemoteEpisode>>()
+                    .map { it.toDomainEpisode() }
+            }
+        }
+
     }
 
     private inline fun <T> safeApiCall(apiCall: () -> T): ApiOperation<T> {
@@ -65,6 +81,13 @@ class KtorClient {
 sealed interface ApiOperation<T> {
     data class Success<T>(val data: T): ApiOperation<T>
     data class Failure<T>(val exception: Exception): ApiOperation<T>
+
+    fun <R> mapSuccess(transform: (T) -> R): ApiOperation<R> {
+        return when (this) {
+            is Success -> Success(transform(data))
+            is Failure -> Failure(exception)
+        }
+    }
 
     fun onSuccess(block: (T) -> Unit): ApiOperation<T> {
         if(this is Success) block(data)
